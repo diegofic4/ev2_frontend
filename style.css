@@ -1,14 +1,14 @@
 :root {
-    --color-primario: #000000;
-    --color-primario-hover: #333333;
-    --color-peligro: #dc3545;
+    --color-primario: #007c53;
+    --color-primario-hover: #005c3e;
+    --color-peligro: #e63946;
     --color-peligro-hover: #c82333;
     --color-exito: #28a745;
-    --color-fondo-body: #007c53;
+    --color-fondo-body: #bac9c5;
     --color-fondo-cajas: #ffffff;
     --color-texto-principal: #333333;
     --color-texto-etiquetas: #555555;
-    --color-borde: #cccccc;
+    --color-borde: #000000;
     --color-borde-tabla: #dddddd;
 }
 
@@ -153,4 +153,27 @@ tr:hover {
     overflow-y: auto;  
     border: 1px solid var(--color-borde-tabla); 
     border-radius: 4px; 
+}
+.btn-editar {
+    background-color: #17a2b8; 
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    width: auto; 
+    margin-right: 5px; 
+}
+
+.btn-editar:hover {
+    background-color: #138496;
+}
+.btn-cancelar {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-cancelar:hover {
+    background-color: #5a6268;
 }

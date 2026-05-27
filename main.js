@@ -3,6 +3,8 @@ const formulario = document.getElementById('registroForm');
 const mensajeExito = document.getElementById('mensajeExito');
 const cuerpoTabla = document.getElementById('cuerpoTabla');
 const buscarInput = document.getElementById('buscarInput');
+const btnRegistrar = document.getElementById('btnRegistrar');
+const btnCancelar = document.getElementById('btnCancelar');
 
 // --- Persistencia con Local Storage ---
 // Al cargar la página, intentamos obtener los datos guardados.
@@ -64,6 +66,7 @@ function renderizarTabla(arregloAMostrar = listaColaboradores) {
             <td>${colaborador.cargo}</td>
             <td>${colaborador.correo}</td>
             <td>
+                <button class="btn-editar" onclick="cargarColaborador(${colaborador.id})">Editar</button>
                 <button class="btn-eliminar" onclick="eliminarColaborador(${colaborador.id})">Eliminar</button>
             </td>
         `;
@@ -105,29 +108,47 @@ formulario.addEventListener('submit', function(evento) {
         formularioValido = false;
     }
     
-    // --- LÓGICA SI LA VALIDACIÓN ES CORRECTA ---
+// --- LÓGICA SI LA VALIDACIÓN ES CORRECTA ---
     if (formularioValido) {
-        // 1. Crear el objeto colaborador
-        const nuevoColaborador = {
-            id: Date.now(),
-            nombre: nombre,
-            apellido: apellido,
-            cargo: cargo,
-            correo: correo
-        };
+        
+        if (idEdicion === null) {
+            const nuevoColaborador = {
+                id: Date.now(),
+                nombre: nombre,
+                apellido: apellido,
+                cargo: cargo,
+                correo: correo
+            };
+            listaColaboradores.push(nuevoColaborador);
+            mensajeExito.textContent = '¡Colaborador registrado exitosamente!';
+            
+        } else {
+            // MODO EDICIÓN 
+            listaColaboradores = listaColaboradores.map(function(colaborador) {
+                if (colaborador.id === idEdicion) {
+                    // Si encontramos el que estábamos editando, le actualizamos los valores
+                    return {
+                        id: colaborador.id, // Mantenemos el mismo ID
+                        nombre: nombre,
+                        apellido: apellido,
+                        cargo: cargo,
+                        correo: correo
+                    };
+                }
+                return colaborador; // Si no es el que buscamos, lo devolvemos tal cual
+            });
+            
+            mensajeExito.textContent = '¡Colaborador actualizado correctamente!';
+            
+            // --- LIMPIEZA DEL MODO EDICIÓN ---
+            idEdicion = null; // Apagamos el modo edición
+            btnRegistrar.textContent = 'Registrar Colaborador'; 
+            btnCancelar.style.display = 'none';
+        }
 
-        // 2. Agregar el objeto al arreglo
-        listaColaboradores.push(nuevoColaborador);
-
-        // --- Guardar en Local Storage ---
-        // Convertimos el arreglo a texto (JSON) y lo guardamos en el navegador
+        // Actualizamos Local Storage y la Tabla en cualquiera de los dos casos
         localStorage.setItem('colaboradores', JSON.stringify(listaColaboradores));
-
-        // 3. Llamar a la función para actualizar la vista de la tabla
         renderizarTabla();
-
-        // 4. Mostrar mensaje y limpiar el formulario para un nuevo registro
-        mensajeExito.textContent = '¡Colaborador registrado y agregado a la tabla!';
         formulario.reset(); 
     }
 });
@@ -149,7 +170,7 @@ let ordenAscendente = true;
 function ordenarPor(propiedad) {
     // Usamos el método sort para comparar los elementos
     listaColaboradores.sort(function(a, b) {
-        // Convertimos a minúsculas para comparar correctamente
+        // Convertimos a minúsculas para comparar correctamente y tambien a String por si en un futuro añadimos un campo que sea de numeros así no haya problemas con el tipo de dato.
         const valorA = String(a[propiedad]).toLowerCase();
         const valorB = String(b[propiedad]).toLowerCase();
 
@@ -176,6 +197,37 @@ function ordenarPor(propiedad) {
     }
 }
 
+let idEdicion = null;
+
+/**
+ * FUNCIÓN: Toma los datos del colaborador seleccionado y los pone en el formulario
+ */
+function cargarColaborador(id) {
+    // 1. Buscamos al colaborador en el arreglo usando el método .find()
+    const colaborador = listaColaboradores.find(function(c) {
+        return c.id === id;
+    });
+
+    if (colaborador) {
+        // 2. Llenamos los inputs con la información encontrada
+        document.getElementById('nombre').value = colaborador.nombre;
+        document.getElementById('apellido').value = colaborador.apellido;
+        document.getElementById('cargo').value = colaborador.cargo;
+        document.getElementById('correo').value = colaborador.correo;
+
+        // 3. Activamos el modo edición guardando el ID actual
+        idEdicion = id; 
+
+        // 4. Cambiamos el texto del botón y borramos mensajes de éxito previos
+        btnRegistrar.textContent = 'Actualizar Colaborador';
+        btnCancelar.style.display = 'block';
+        mensajeExito.textContent = '';
+        
+        // Hacemos que la pantalla suba al inicio suavemente para que el usuario vea el formulario
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
 /**
  * FUNCIÓN: Elimina un colaborador del arreglo basándose en su ID
  * y actualiza la tabla.
@@ -198,6 +250,20 @@ function eliminarColaborador(id) {
         renderizarTabla();
     }
 }
+
+// EVENTO: Para el botón Cancelar Edición
+btnCancelar.addEventListener('click', function() {
+    // 1. Apagamos el modo edición
+    idEdicion = null;
+    
+    // 2. Limpiamos los inputs
+    formulario.reset();
+    
+    // 3. Restauramos la interfaz a como estaba al principio
+    btnRegistrar.textContent = 'Registrar Colaborador';
+    btnCancelar.style.display = 'none';
+    limpiarMensajes();
+});
 
 let temporizadorBusqueda;
 buscarInput.addEventListener('input', function() {
