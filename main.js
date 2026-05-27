@@ -4,8 +4,11 @@ const mensajeExito = document.getElementById('mensajeExito');
 const cuerpoTabla = document.getElementById('cuerpoTabla');
 const buscarInput = document.getElementById('buscarInput');
 
-// Arreglo para almacenar los objetos de los colaboradores
-let listaColaboradores = [];
+// --- Persistencia con Local Storage ---
+// Al cargar la página, intentamos obtener los datos guardados.
+// Si no hay nada (null), usamos un arreglo vacío [] por defecto.
+// Usamos JSON.parse porque Local Storage solo guarda texto plano.
+let listaColaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
 
 // 2. Funciones Reutilizables de Validación 
 function estaVacio(valor) {
@@ -39,6 +42,19 @@ function limpiarMensajes() {
 function renderizarTabla(arregloAMostrar = listaColaboradores) {
     cuerpoTabla.innerHTML = '';
 
+    // --- Estado "Sin Resultados" ---
+    // Si el arreglo que recibimos está vacío, mostramos un mensaje amigable.
+    if (arregloAMostrar.length === 0) {
+        cuerpoTabla.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; color: #777; padding: 20px;">
+                    No se encontraron colaboradores.
+                </td>
+            </tr>
+        `;
+        return; // Salimos de la función para no ejecutar el forEach de abajo
+    }
+
     // Ahora iteramos sobre el arreglo que recibimos por parámetro
     arregloAMostrar.forEach(function(colaborador) {
         const fila = document.createElement('tr');
@@ -55,7 +71,7 @@ function renderizarTabla(arregloAMostrar = listaColaboradores) {
     });
 }
 
-// 3. Evento principal del formulario
+// 3. Eventos e Interacciones
 formulario.addEventListener('submit', function(evento) {
     evento.preventDefault(); 
     limpiarMensajes();
@@ -88,7 +104,6 @@ formulario.addEventListener('submit', function(evento) {
         mostrarError('errorCorreo', 'El correo debe tener formato válido y terminar en @empresa.cl');
         formularioValido = false;
     }
-
     
     // --- LÓGICA SI LA VALIDACIÓN ES CORRECTA ---
     if (formularioValido) {
@@ -104,6 +119,10 @@ formulario.addEventListener('submit', function(evento) {
         // 2. Agregar el objeto al arreglo
         listaColaboradores.push(nuevoColaborador);
 
+        // --- Guardar en Local Storage ---
+        // Convertimos el arreglo a texto (JSON) y lo guardamos en el navegador
+        localStorage.setItem('colaboradores', JSON.stringify(listaColaboradores));
+
         // 3. Llamar a la función para actualizar la vista de la tabla
         renderizarTabla();
 
@@ -118,9 +137,7 @@ function filtrarColaboradores(terminoBusqueda) {
     const termino = terminoBusqueda.toLowerCase();
 
     return listaColaboradores.filter(function(colaborador) {
-
         return Object.values(colaborador).some(function(valor) {
-
             return String(valor).toLowerCase().includes(termino);
         });
     });
@@ -136,6 +153,10 @@ function eliminarColaborador(id) {
         return colaborador.id !== id;
     });
 
+    // --- Actualizar Local Storage tras eliminar ---
+    // Sobreescribimos los datos guardados con el nuevo arreglo que ya no tiene al colaborador eliminado
+    localStorage.setItem('colaboradores', JSON.stringify(listaColaboradores));
+
     const textoBusqueda = document.getElementById('buscarInput').value;
     
     if (textoBusqueda !== '') {
@@ -144,10 +165,14 @@ function eliminarColaborador(id) {
         renderizarTabla();
     }
 }
+
 buscarInput.addEventListener('input', function() {
     const texto = buscarInput.value;
-    
     const resultadosFiltrados = filtrarColaboradores(texto);
-    
     renderizarTabla(resultadosFiltrados);
 });
+
+// --- Renderizado Inicial ---
+// Cuando la página cargue, ejecutamos esta función para que pinte en la tabla
+// los datos que rescatamos del Local Storage.
+renderizarTabla();
