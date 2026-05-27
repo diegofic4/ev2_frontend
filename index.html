@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Colaboradores</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Registro de Colaboradores</h2>
+        
+        
+        <form id="registroForm">
+            <div class="grupo-form">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan">
+                <span class="error" id="errorNombre"></span>
+            </div>
+
+            <div class="grupo-form">
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" name="apellido" placeholder="Ej: Pérez">
+                <span class="error" id="errorApellido"></span>
+            </div>
+
+            <div class="grupo-form">
+                <label for="cargo">Cargo:</label>
+                <select id="cargo" name="cargo">
+                    <option value="" disabled selected>Seleccione un cargo...</option>
+                    <option value="Analista Programador">Analista Programador</option>
+                    <option value="Administrador de Sistemas">Administrador de Sistemas</option>
+                    <option value="Administrador de Base de Datos">Administrador de Base de Datos</option>
+                    <option value="Especialista en Redes">Especialista en Redes</option>
+                    <option value="Soporte Técnico">Soporte Técnico</option>
+                </select>
+                <span class="error" id="errorCargo"></span>
+            </div>
+
+            <div class="grupo-form">
+                <label for="correo">Correo Electrónico Corporativo:</label>
+                <input type="text" id="correo" name="correo" placeholder="usuario@empresa.cl">
+                <span class="error" id="errorCorreo"></span>
+            </div>
+
+            <button type="submit" id="btnRegistrar">Registrar Colaborador</button>
+            <p class="exito" id="mensajeExito"></p>
+        </form>
+    </div>
+    </div> <div class="contenedor-tabla">
+        <h2>Listado de Colaboradores</h2>
+        <div class="buscador">
+            <input type="text" id="buscarInput" placeholder="Buscar por nombre, apellido, cargo, correo...">
+        </div>
+        <div class="tabla-scroll">
+        <table id="tablaColaboradores">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cargo</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoTabla">
+                </tbody>
+        </table>
+    </div></div>
+
+    <script src="main.js"></script>
+</body>
+</html>
