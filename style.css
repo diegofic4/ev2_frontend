@@ -93,7 +93,7 @@ button:hover {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    width: 600px;
+    width: 900px;
 }
 
 table {
@@ -141,7 +141,7 @@ tr:hover {
     border-radius: 4px;
     cursor: pointer;
     font-size: 13px;
-    width: auto; 
+    width: 100%; 
     margin-top: 0;
 }
 
@@ -149,7 +149,7 @@ tr:hover {
     background-color: var(--color-peligro-hover);
 }
 .tabla-scroll {
-    max-height: 300px; 
+    max-height: 500px; 
     overflow-y: auto;  
     border: 1px solid var(--color-borde-tabla); 
     border-radius: 4px; 
@@ -162,8 +162,9 @@ tr:hover {
     border-radius: 4px;
     cursor: pointer;
     font-size: 13px;
-    width: auto; 
-    margin-right: 5px; 
+    width: 100%; 
+    margin-bottom: 5px;
+    box-sizing: border-box;
 }
 
 .btn-editar:hover {
