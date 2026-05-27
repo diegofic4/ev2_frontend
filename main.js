@@ -142,6 +142,39 @@ function filtrarColaboradores(terminoBusqueda) {
         });
     });
 }
+// --- Ordenamiento de tabla ---
+// Variable para saber si ordenamos de A-Z o de Z-A
+let ordenAscendente = true; 
+
+function ordenarPor(propiedad) {
+    // Usamos el método sort para comparar los elementos
+    listaColaboradores.sort(function(a, b) {
+        // Convertimos a minúsculas para comparar correctamente
+        const valorA = String(a[propiedad]).toLowerCase();
+        const valorB = String(b[propiedad]).toLowerCase();
+
+        if (valorA < valorB) {
+            return ordenAscendente ? -1 : 1;
+        }
+        if (valorA > valorB) {
+            return ordenAscendente ? 1 : -1;
+        }
+        return 0; 
+    });
+
+    // Invertimos la variable para que el próximo clic ordene al revés (Z-A)
+    ordenAscendente = !ordenAscendente;
+
+    const textoBusqueda = buscarInput.value;
+
+  if (textoBusqueda !== '') {
+        // Si hay texto, filtramos el arreglo (que ya está ordenado) y renderizamos eso
+        renderizarTabla(filtrarColaboradores(textoBusqueda));
+    } else {
+        // Si el buscador está vacío, renderizamos la lista completa
+        renderizarTabla();
+    }
+}
 
 /**
  * FUNCIÓN: Elimina un colaborador del arreglo basándose en su ID
@@ -166,10 +199,14 @@ function eliminarColaborador(id) {
     }
 }
 
+let temporizadorBusqueda;
 buscarInput.addEventListener('input', function() {
+    clearTimeout(temporizadorBusqueda);
+
+    temporizadorBusqueda = setTimeout(function(){
     const texto = buscarInput.value;
     const resultadosFiltrados = filtrarColaboradores(texto);
-    renderizarTabla(resultadosFiltrados);
+    renderizarTabla(resultadosFiltrados);}, 300);
 });
 
 // --- Renderizado Inicial ---
